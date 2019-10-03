@@ -3,6 +3,64 @@
            https://api.github.com/users/<your name>
 */
 
+const cards = document.querySelector(".cards");
+
+axios
+  .get("https://api.github.com/users/bigknell/followers")
+  .then(response => {
+    let fArray = [];
+    response.data.forEach(f => {
+      return fArray.push(f.login);
+    });
+    console.log(fArray);
+    fArray.forEach(f => {
+      axios
+        .get("https://api.github.com/users/" + f)
+        .then(response => {
+          cards.appendChild(createCard(response.data));
+        })
+        .catch(error => {
+          console.log("The data was not returned", error);
+        });
+    });
+  })
+  .catch(error => {
+    console.log("The data was not returned", error);
+  });
+
+axios
+  .get("https://api.github.com/users/bteague92")
+  .then(response => {
+    console.log(response);
+    cards.appendChild(createCard(response.data));
+    followersArray.forEach(f => {
+      axios
+        .get("https://api.github.com/users/" + f)
+        .then(response => {
+          cards.appendChild(createCard(response.data));
+        })
+        .catch(error => {
+          console.log("The data was not returned", error);
+        });
+    });
+  })
+  .catch(error => {
+    console.log("The data was not returned", error);
+  });
+
+// .then(response => {
+// })
+// .catch(error => {
+//   console.log("The data was not returned", error);
+// });
+
+// response.data.forEach(item => {
+//   const newCard = createCard(item);
+//   cards.appendChild(newCard);
+// });
+
+// cards.appendChild(createCard(response.data));
+
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
@@ -24,7 +82,61 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [
+  "tetondan",
+  "dustinmyers",
+  "justsml",
+  "luishrd",
+  "bigknell"
+];
+
+function createCard(data) {
+  ///create elements
+  const card = document.createElement("div");
+  const img = document.createElement("img");
+  const cardInfo = document.createElement("div");
+  const name = document.createElement("h3");
+  const username = document.createElement("p");
+  const location = document.createElement("p");
+  const profile = document.createElement("p");
+  const gitAddress = document.createElement("a");
+  const followers = document.createElement("p");
+  const following = document.createElement("p");
+  const bio = document.createElement("p");
+
+  ///structure
+  card.appendChild(img);
+  card.appendChild(cardInfo);
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(username);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
+  profile.appendChild(gitAddress);
+
+  ///assign classes
+  card.classList.add("card");
+  cardInfo.classList.add("card-info");
+  name.classList.add("name");
+  username.classList.add("username");
+
+  ///content
+  img.src = data.avatar_url;
+  name.textContent = data.name;
+  username.textContent = data.login;
+  location.textContent = "Location: " + data.location;
+  profile.textContent = "Profile:";
+  gitAddress.textContent = data.html_url;
+  followers.textContent = "Followers: " + data.followers;
+  following.textContent = "Following: " + data.following;
+  bio.textContent = "Bio: " + data.bio;
+
+  console.log(card);
+
+  return card;
+}
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
